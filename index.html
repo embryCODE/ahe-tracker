@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<html xmlns:v-on="http://www.w3.org/1999/xhtml" lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Agnostic Healthy Eating Tracker</title>
@@ -28,10 +28,11 @@ diet-quality hierarchy more often than any food type of lower rank.
 
 <script type="text/x-template" id="food-list-template">
   <div>
-    <ul>
-      <li v-for="food in foods"
+    <ul v-for="category in returnFoodCategories()">
+      <h2 class="food-category-name">{{category.categoryName}}</h2>
+      <li v-for="food in category.foods"
           :key="food.foodName">
-        <span class="food-name">{{food.foodName}} ({{food.foodCategory}})</span>
+        <span class="food-name">{{food.foodName}}</span>
         <span class="counter-button" v-on:click="emitDecreaseCounter(food.foodName)"><</span>
         <span class="counter">{{food.counter}}</span>
         <span class="counter-button" v-on:click="emitIncreaseCounter(food.foodName)">></span>
@@ -54,6 +55,33 @@ diet-quality hierarchy more often than any food type of lower rank.
         },
         emitDecreaseCounter: function (foodName) {
           this.$emit('decrease-counter', foodName)
+        },
+        returnFoodCategories: function () {
+          var foodCategories = []
+          var foodsByCategory = []
+
+          this.foods.forEach(function (food) {
+            if (foodCategories.indexOf(food.foodCategory) === -1) {
+              foodCategories.push(food.foodCategory)
+            }
+          })
+
+          foodCategories.forEach(function (category) {
+            foodsByCategory.push({
+              categoryName: category,
+              foods: []
+            })
+          })
+
+          this.foods.forEach(function (food) {
+            foodsByCategory.forEach(function (category) {
+              if (category.categoryName === food.foodCategory) {
+                category.foods.push(food)
+              }
+            })
+          })
+
+          return foodsByCategory
         }
       }
     }
