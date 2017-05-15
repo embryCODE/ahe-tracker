@@ -1,20 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <title>Agnostic Healthy Eating Tracker</title>
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="css/style.css">
 
-  <script
-    src="https://code.jquery.com/jquery-3.2.1.min.js"
-    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-    crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-          integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-          crossorigin="anonymous"></script>
   <script src="https://unpkg.com/vue"></script>
 
 </head>
@@ -27,106 +18,116 @@ diet-quality hierarchy more often than any food type of lower rank.
 
 <div id="app">
 
-  <ul>
-    <food-category-list
-      v-bind:category="category"
-      v-for="category in foodCategories"
-      :key="category.categoryName">
-    </food-category-list>
-  </ul>
+  <food-list
+    v-bind:foods="foods"
+    v-on:increase-counter="increaseCounter"
+    v-on:decrease-counter="decreaseCounter">
+  </food-list>
 
 </div>
 
-<script type="text/x-template" id="food-category-list-template">
+<script type="text/x-template" id="food-list-template">
   <div>
-    <h2>{{category.categoryName}}</h2>
     <ul>
-      <li v-for="food in category.foodsInCategory"><span class="food-name">{{food.foodName}}</span><span
-        class="decrease-button"><</span><span
-        class="counter">{{food.counter}}</span><span class="increase-button">></span></li>
+      <li v-for="food, i in foods"
+          :key="food.foodName">
+        <span class="food-name">{{food.foodName}} ({{food.foodCategory}})</span>
+        <span class="decrease-button" v-on:click="emitDecreaseCounter(i)"><</span>
+        <span class="counter">{{food.counter}}</span>
+        <span class="increase-button" v-on:click="emitIncreaseCounter(i)">></span>
+      </li>
     </ul>
   </div>
 </script>
 
 <script>
 
+  var foodListComponent = {
+    'food-list': {
+      props: [
+        'foods'
+      ],
+      template: '#food-list-template',
+      methods: {
+        emitIncreaseCounter: function (i) {
+          this.$emit('increase-counter', i)
+        },
+        emitDecreaseCounter: function (i) {
+          this.$emit('decrease-counter', i)
+        }
+      }
+    }
+  }
+
   var AHE = new Vue({
     el: '#app',
     name: 'AHE Tracker',
-    components: {
-      'food-category-list': {
-        props: [
-          'category'
-        ],
-        template: '#food-category-list-template'
-      }
-    },
+    components: foodListComponent,
     data: {
-      foodCategories: [
+      foods: [
         {
-          categoryName: 'Essential',
-          foodsInCategory: [
-            {
-              foodName: 'Vegetables',
-              counter: 12
-            },
-            {
-              foodName: 'Fruits',
-              counter: 8
-            }
-          ]
+          foodName: 'Vegetables',
+          foodCategory: 'Essential',
+          counter: 0
         },
         {
-          categoryName: 'Recommended',
-          foodsInCategory: [
-            {
-              foodName: 'Nuts, Seeds, and Healthy Oils',
-              counter: 4
-            },
-            {
-              foodName: 'Fish and High-Quality Meats',
-              counter: 7
-            },
-            {
-              foodName: 'Whole Grains',
-              counter: 5
-            },
-            {
-              foodName: 'Dairy',
-              counter: 7
-            }
-          ]
+          foodName: 'Fruits',
+          foodCategory: 'Essential',
+          counter: 0
         },
         {
-          categoryName: 'Acceptable',
-          foodsInCategory: [
-            {
-              foodName: 'Refined Grains',
-              counter: 2
-            },
-            {
-              foodName: 'Other Foods',
-              counter: 3
-            },
-            {
-              foodName: 'Low-Quality Meats',
-              counter: 3
-            },
-            {
-              foodName: 'Sweets',
-              counter: 1
-            },
-            {
-              foodName: 'Fried Foods',
-              counter: 0
-            }
-          ]
+          foodName: 'Nuts, Seeds, and Healthy Oils',
+          foodCategory: 'Recommended',
+          counter: 0
+        },
+        {
+          foodName: 'Fish and High-Quality Meats',
+          foodCategory: 'Recommended',
+          counter: 0
+        },
+        {
+          foodName: 'Whole Grains',
+          foodCategory: 'Recommended',
+          counter: 0
+        },
+        {
+          foodName: 'Dairy',
+          foodCategory: 'Recommended',
+          counter: 0
+        },
+        {
+          foodName: 'Refined Grains',
+          foodCategory: 'Acceptable',
+          counter: 0
+        },
+        {
+          foodName: 'Other Foods',
+          foodCategory: 'Acceptable',
+          counter: 0
+        },
+        {
+          foodName: 'Low-Quality Meats',
+          foodCategory: 'Acceptable',
+          counter: 0
+        },
+        {
+          foodName: 'Sweets',
+          foodCategory: 'Acceptable',
+          counter: 0
+        },
+        {
+          foodName: 'Fried Foods',
+          foodCategory: 'Acceptable',
+          counter: 0
         }
       ]
     },
     methods: {
-      incrementCounter: function () {
-        this.counter
+      increaseCounter: function (i) {
+        this.foods[i].counter += .5
+      },
+      decreaseCounter: function (i) {
+        this.foods[i].counter -= .5
       }
     }
   })
