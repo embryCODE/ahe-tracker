@@ -29,12 +29,12 @@ diet-quality hierarchy more often than any food type of lower rank.
 <script type="text/x-template" id="food-list-template">
   <div>
     <ul>
-      <li v-for="food, i in foods"
+      <li v-for="food in foods"
           :key="food.foodName">
         <span class="food-name">{{food.foodName}} ({{food.foodCategory}})</span>
-        <span class="decrease-button" v-on:click="emitDecreaseCounter(i)"><</span>
+        <span class="counter-button" v-on:click="emitDecreaseCounter(food.foodName)"><</span>
         <span class="counter">{{food.counter}}</span>
-        <span class="increase-button" v-on:click="emitIncreaseCounter(i)">></span>
+        <span class="counter-button" v-on:click="emitIncreaseCounter(food.foodName)">></span>
       </li>
     </ul>
   </div>
@@ -49,11 +49,11 @@ diet-quality hierarchy more often than any food type of lower rank.
       ],
       template: '#food-list-template',
       methods: {
-        emitIncreaseCounter: function (i) {
-          this.$emit('increase-counter', i)
+        emitIncreaseCounter: function (foodName) {
+          this.$emit('increase-counter', foodName)
         },
-        emitDecreaseCounter: function (i) {
-          this.$emit('decrease-counter', i)
+        emitDecreaseCounter: function (foodName) {
+          this.$emit('decrease-counter', foodName)
         }
       }
     }
@@ -123,11 +123,19 @@ diet-quality hierarchy more often than any food type of lower rank.
       ]
     },
     methods: {
-      increaseCounter: function (i) {
-        this.foods[i].counter += .5
+      increaseCounter: function (foodName) {
+        this.foods.forEach(function (food) {
+          if (food.foodName === foodName) {
+            food.counter += .5
+          }
+        })
       },
-      decreaseCounter: function (i) {
-        this.foods[i].counter -= .5
+      decreaseCounter: function (foodName) {
+        this.foods.forEach(function (food) {
+          if (food.foodName === foodName) {
+            food.counter -= .5
+          }
+        })
       }
     }
   })
