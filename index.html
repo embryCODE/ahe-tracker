@@ -28,7 +28,7 @@ diet-quality hierarchy more often than any food type of lower rank.
 
 <script type="text/x-template" id="food-list-template">
   <div>
-    <ul v-for="category in returnFoodCategories()">
+    <ul v-for="category in foodCategories">
       <h2 class="food-category-name">{{category.categoryName}}</h2>
       <li v-for="food in category.foods"
           :key="food.foodName">
@@ -49,24 +49,18 @@ diet-quality hierarchy more often than any food type of lower rank.
         'foods'
       ],
       template: '#food-list-template',
-      methods: {
-        emitIncreaseCounter: function (foodName) {
-          this.$emit('increase-counter', foodName)
-        },
-        emitDecreaseCounter: function (foodName) {
-          this.$emit('decrease-counter', foodName)
-        },
-        returnFoodCategories: function () {
-          var foodCategories = []
+      computed: {
+        foodCategories: function () {
+          var categories = []
           var foodsByCategory = []
 
           this.foods.forEach(function (food) {
-            if (foodCategories.indexOf(food.foodCategory) === -1) {
-              foodCategories.push(food.foodCategory)
+            if (categories.indexOf(food.foodCategory) === -1) {
+              categories.push(food.foodCategory)
             }
           })
 
-          foodCategories.forEach(function (category) {
+          categories.forEach(function (category) {
             foodsByCategory.push({
               categoryName: category,
               foods: []
@@ -82,6 +76,14 @@ diet-quality hierarchy more often than any food type of lower rank.
           })
 
           return foodsByCategory
+        }
+      },
+      methods: {
+        emitIncreaseCounter: function (foodName) {
+          this.$emit('increase-counter', foodName)
+        },
+        emitDecreaseCounter: function (foodName) {
+          this.$emit('decrease-counter', foodName)
         }
       }
     }
