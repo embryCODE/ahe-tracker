@@ -1,3 +1,18 @@
+#wrapper {
+  max-width: 414px;
+}
+
 .counter-button {
   cursor: pointer;
+}
+
+.food-li {
+  padding: 5px 0;
+}
+
+.counter {
+  padding: 0 5px;
+  display: inline-block;
+  width: 2em;
+  text-align: center;
 }
