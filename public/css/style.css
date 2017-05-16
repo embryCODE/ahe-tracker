@@ -16,3 +16,7 @@
   width: 2em;
   text-align: center;
 }
+
+.counter-div {
+  text-align: right;
+}

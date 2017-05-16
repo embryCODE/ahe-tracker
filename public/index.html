@@ -55,7 +55,7 @@
       <h4 class="food-category-name">{{category.categoryName}}</h4>
       <li v-for="food in category.foods" class="food-li row">
         <span class="food-name col-xs-7">{{food.foodName}}</span>
-        <div class="counter-div col-xs-4 col-xs-offset-1">
+        <div class="counter-div col-xs-5">
           <button type="button" class="counter-button" aria-label="Decrease"
                   v-on:click="emitDecreaseCounter(food.foodName)"><span class="glyphicon glyphicon-menu-left"
                                                                         aria-hidden="true"></span></button>
