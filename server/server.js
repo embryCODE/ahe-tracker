@@ -6,12 +6,14 @@ const restify = require('express-restify-mongoose')
 const app = express()
 const router = express.Router()
 const path = require('path')
+const port = process.env.PORT || 3000
+const dbUrl = process.env.DB_URL || require('../config').dbUrl
 
 app.use(bodyParser.json())
 app.use(methodOverride())
 
 // Connect to mLab Mongo database
-mongoose.connect(process.env.DB_URL || require('../config').dbURL)
+mongoose.connect(dbUrl)
 
 // Create Food schema
 const foodSchema = new mongoose.Schema({
@@ -29,8 +31,6 @@ restify.serve(router, Food)
 
 app.use('/', express.static(path.join(__dirname, '../public')))
 app.use(router)
-
-const port = process.env.PORT || 3000
 
 app.listen(port, () => {
   console.log('Express server listening on port ' + port)
