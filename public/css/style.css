@@ -1,5 +1,9 @@
 #wrapper {
-  max-width: 413px;
+  max-width: 1000px;
+}
+
+#app {
+  max-width: 750px;
 }
 
 .counter-button {
