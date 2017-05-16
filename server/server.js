@@ -14,15 +14,18 @@ app.use(methodOverride())
 // Connect to mLab Mongo database
 mongoose.connect(config.dbURL)
 
-// Create Food model
-const Food = mongoose.model('Food', new mongoose.Schema({
+// Create Food schema
+const foodSchema = new mongoose.Schema({
   foodName: String,
   foodCategory: String,
   priorityIndex: Number,
   counter: Number
-}))
+})
 
-// Use restify to create endpoints based on Food model
+// Create Food model
+const Food = mongoose.model('Food', foodSchema)
+
+// Create endpoints based on Food model
 restify.serve(router, Food)
 
 app.use('/', express.static(path.join(__dirname, '../public')))
