@@ -6,13 +6,12 @@ const restify = require('express-restify-mongoose')
 const app = express()
 const router = express.Router()
 const path = require('path')
-const config = require('../config')
 
 app.use(bodyParser.json())
 app.use(methodOverride())
 
 // Connect to mLab Mongo database
-mongoose.connect(process.env.DB_URL || config.dbURL)
+mongoose.connect(process.env.DB_URL || require('../config').dbURL)
 
 // Create Food schema
 const foodSchema = new mongoose.Schema({
