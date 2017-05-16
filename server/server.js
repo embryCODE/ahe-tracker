@@ -6,13 +6,12 @@ const restify = require('express-restify-mongoose')
 const app = express()
 const router = express.Router()
 const path = require('path')
+const config = require('../config')
 
 app.use(bodyParser.json())
 app.use(methodOverride())
 
-const mLabUserName = 'mason'
-const mLabPassword = 'bebop111'
-mongoose.connect(`mongodb://${mLabUserName}:${mLabPassword}@ds143211.mlab.com:43211/ahe`)
+mongoose.connect(config.dbURL)
 
 restify.serve(router, mongoose.model('foods', new mongoose.Schema({
   foodName: String,
