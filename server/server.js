@@ -14,8 +14,6 @@ const mLabUserName = 'mason'
 const mLabPassword = 'bebop111'
 mongoose.connect(`mongodb://${mLabUserName}:${mLabPassword}@ds143211.mlab.com:43211/ahe`)
 
-app.use('/', express.static(path.join(__dirname, '../public')))
-
 restify.serve(router, mongoose.model('foods', new mongoose.Schema({
   foodName: String,
   foodCategory: String,
@@ -23,6 +21,8 @@ restify.serve(router, mongoose.model('foods', new mongoose.Schema({
   counter: Number
 })))
 
+// Routers
+app.use('/', express.static(path.join(__dirname, '../public')))
 app.use(router)
 
 app.listen(3000, () => {

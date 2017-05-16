@@ -30,8 +30,7 @@ diet-quality hierarchy more often than any food type of lower rank.
   <div>
     <ul v-for="category in foodCategories">
       <h2 class="food-category-name">{{category.categoryName}}</h2>
-      <li v-for="food in category.foods"
-          :key="food.priorityIndex">
+      <li v-for="food in category.foods">
         <span class="food-name">{{food.foodName}}</span>
         <span class="counter-button" v-on:click="emitDecreaseCounter(food.foodName)"><</span>
         <span class="counter">{{food.counter}}</span>
@@ -54,12 +53,14 @@ diet-quality hierarchy more often than any food type of lower rank.
           var categories = []
           var foodsByCategory = []
 
+          // Look at all foods and add found category names to categories array
           this.foods.forEach(function (food) {
             if (categories.indexOf(food.foodCategory) === -1) {
               categories.push(food.foodCategory)
             }
           })
 
+          // Look at categories and add objects with correct shape to foodsByCategory
           categories.forEach(function (category) {
             foodsByCategory.push({
               categoryName: category,
@@ -67,11 +68,19 @@ diet-quality hierarchy more often than any food type of lower rank.
             })
           })
 
+          // Add foods to the appropriate category
           this.foods.forEach(function (food) {
             foodsByCategory.forEach(function (category) {
               if (category.categoryName === food.foodCategory) {
                 category.foods.push(food)
               }
+            })
+          })
+
+          // Sort each food array by priorityIndex
+          foodsByCategory.forEach(function (category) {
+            category.foods.sort(function (a, b) {
+              return a.priorityIndex - b.priorityIndex
             })
           })
 
@@ -101,7 +110,6 @@ diet-quality hierarchy more often than any food type of lower rank.
         this.foods.forEach(function (food) {
           if (food.foodName === foodName) {
             food.counter += .5
-            console.log(food.counter)
             fetch('/api/v1/foods/' + food._id, {
               method: 'post',
               headers: {
