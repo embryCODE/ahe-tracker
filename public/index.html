@@ -110,10 +110,9 @@ diet-quality hierarchy more often than any food type of lower rank.
         this.foods.forEach(function (food) {
           if (food.foodName === foodName) {
             food.counter += .5
-            fetch('/api/v1/foods/' + food._id, {
+            fetch('/api/v1/food/' + food._id, {
               method: 'post',
               headers: {
-                'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify(food)
@@ -125,10 +124,9 @@ diet-quality hierarchy more often than any food type of lower rank.
         this.foods.forEach(function (food) {
           if (food.foodName === foodName) {
             food.counter -= .5
-            fetch('/api/v1/foods/' + food._id, {
+            fetch('/api/v1/food/' + food._id, {
               method: 'post',
               headers: {
-                'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify(food)
@@ -138,7 +136,7 @@ diet-quality hierarchy more often than any food type of lower rank.
       }
     },
     created: function () {
-      fetch('/api/v1/foods').then(function (res) {
+      fetch('/api/v1/food').then(function (res) {
         return res.json()
       })
         .then(json => {
