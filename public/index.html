@@ -31,7 +31,7 @@ diet-quality hierarchy more often than any food type of lower rank.
     <ul v-for="category in foodCategories">
       <h2 class="food-category-name">{{category.categoryName}}</h2>
       <li v-for="food in category.foods"
-          :key="food.foodName">
+          :key="food.priorityIndex">
         <span class="food-name">{{food.foodName}}</span>
         <span class="counter-button" v-on:click="emitDecreaseCounter(food.foodName)"><</span>
         <span class="counter">{{food.counter}}</span>
@@ -94,69 +94,22 @@ diet-quality hierarchy more often than any food type of lower rank.
     name: 'AHE Tracker',
     components: foodListComponent,
     data: {
-      foods: [
-        {
-          foodName: 'Vegetables',
-          foodCategory: 'Essential',
-          counter: 0
-        },
-        {
-          foodName: 'Fruits',
-          foodCategory: 'Essential',
-          counter: 0
-        },
-        {
-          foodName: 'Nuts, Seeds, and Healthy Oils',
-          foodCategory: 'Recommended',
-          counter: 0
-        },
-        {
-          foodName: 'Fish and High-Quality Meats',
-          foodCategory: 'Recommended',
-          counter: 0
-        },
-        {
-          foodName: 'Whole Grains',
-          foodCategory: 'Recommended',
-          counter: 0
-        },
-        {
-          foodName: 'Dairy',
-          foodCategory: 'Recommended',
-          counter: 0
-        },
-        {
-          foodName: 'Refined Grains',
-          foodCategory: 'Acceptable',
-          counter: 0
-        },
-        {
-          foodName: 'Other Foods',
-          foodCategory: 'Acceptable',
-          counter: 0
-        },
-        {
-          foodName: 'Low-Quality Meats',
-          foodCategory: 'Acceptable',
-          counter: 0
-        },
-        {
-          foodName: 'Sweets',
-          foodCategory: 'Acceptable',
-          counter: 0
-        },
-        {
-          foodName: 'Fried Foods',
-          foodCategory: 'Acceptable',
-          counter: 0
-        }
-      ]
+      foods: []
     },
     methods: {
       increaseCounter: function (foodName) {
         this.foods.forEach(function (food) {
           if (food.foodName === foodName) {
             food.counter += .5
+            console.log(food.counter)
+            fetch('/api/v1/foods/' + food._id, {
+              method: 'post',
+              headers: {
+                'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(food)
+            })
           }
         })
       },
@@ -164,9 +117,25 @@ diet-quality hierarchy more often than any food type of lower rank.
         this.foods.forEach(function (food) {
           if (food.foodName === foodName) {
             food.counter -= .5
+            fetch('/api/v1/foods/' + food._id, {
+              method: 'post',
+              headers: {
+                'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(food)
+            })
           }
         })
       }
+    },
+    created: function () {
+      fetch('/api/v1/foods').then(function (res) {
+        return res.json()
+      })
+        .then(json => {
+          this.foods = json
+        })
     }
   })
 
