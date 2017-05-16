@@ -12,7 +12,7 @@ app.use(bodyParser.json())
 app.use(methodOverride())
 
 // Connect to mLab Mongo database
-mongoose.connect(config.dbURL)
+mongoose.connect(env.process.dbURL || config.dbURL)
 
 // Create Food schema
 const foodSchema = new mongoose.Schema({
