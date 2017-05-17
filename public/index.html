@@ -44,8 +44,7 @@
 
     <food-list
       v-bind:user="user"
-      v-on:increase-counter="increaseCounter"
-      v-on:decrease-counter="decreaseCounter">
+      v-on:change-counter="changeCounter">
     </food-list>
 
   </div>
@@ -59,12 +58,12 @@
         <span class="food-name col-xs-7">{{food.foodName}}</span>
         <div class="counter-div col-xs-5">
           <button type="button" class="counter-button" aria-label="Decrease"
-                  v-on:click="emitDecreaseCounter(food.foodName)"><span class="glyphicon glyphicon-menu-left"
-                                                                        aria-hidden="true"></span></button>
+                  v-on:click="emitChangeCounter(food._id, -.5)"><span class="glyphicon glyphicon-menu-left"
+                                                                   aria-hidden="true"></span></button>
           <span class="counter">{{food.counter}}</span>
           <button type="button" class="counter-button" aria-label="Increase"
-                  v-on:click="emitIncreaseCounter(food.foodName)"><span class="glyphicon glyphicon-menu-right"
-                                                                        aria-hidden="true"></span></button>
+                  v-on:click="emitChangeCounter(food._id, .5)"><span class="glyphicon glyphicon-menu-right"
+                                                                   aria-hidden="true"></span></button>
         </div>
       </li>
     </ul>
@@ -119,14 +118,11 @@
             return foodsByCategory
           }
         }
-      }
-    },
-    methods: {
-      emitIncreaseCounter: function (foodName) {
-        this.$emit('increase-counter', foodName)
       },
-      emitDecreaseCounter: function (foodName) {
-        this.$emit('decrease-counter', foodName)
+      methods: {
+        emitChangeCounter: function (foodId, changeAmount) {
+          this.$emit('change-counter', foodId, changeAmount)
+        }
       }
     }
   }
@@ -142,31 +138,15 @@
       },
       components: foodListComponent,
       methods: {
-        increaseCounter: function (foodName) {
-          this.foods.forEach(function (food) {
-            if (food.foodName === foodName) {
-              food.counter += .5
-              fetch('/api/v1/food/' + food._id, {
-                method: 'post',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(food)
-              })
-            }
-          })
-        },
-        decreaseCounter: function (foodName) {
-          this.foods.forEach(function (food) {
-            if (food.foodName === foodName) {
-              food.counter -= .5
-              fetch('/api/v1/food/' + food._id, {
-                method: 'post',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(food)
-              })
+        changeCounter: function (foodId, changeAmount) {
+          const self = this
+          this.user.foods.forEach(function (food) {
+            if (food._id === foodId) {
+              const userId = self.user._id
+
+              food.counter += changeAmount
+
+              self.$http.put(`/api/users/${userId}/foods/${foodId}/count/${food.counter}`)
             }
           })
         },
