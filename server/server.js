@@ -1,30 +1,41 @@
 // Modules
-const express = require('express')
-const bodyParser = require('body-parser')
 const path = require('path')
-const controller = require('./controller')
+const express = require('express')
 const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
 const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy
+const Strategy = require('passport-local').Strategy
+
+// Custom modules
 const User = require('./models').User
+const controller = require('./controller')
 
 // Constants
 const port = process.env.PORT || 3000
 const dbUrl = process.env.DB_URL || require('../config').dbUrl
 
-// Set Mongoose to use native promises
+// Mongoose setup
 mongoose.Promise = global.Promise
-
-// Connect to mLab Mongo database
 mongoose.connect(dbUrl)
 
-// Configure Passport
-passport.use(new LocalStrategy({usernameField: 'email'},
+// Passport setup
+passport.use(new Strategy({usernameField: 'email'},
   function (email, password, done) {
     User.findOne({email: email}, function (err, user) {
-      if (err) { return done(err) }
-      if (!user) { return done(null, false) }
-      if (password !== user.password) { return done(null, false) }
+      if (err) {
+        return done(err)
+      }
+
+      if (!user) {
+        return done(null, false)
+      }
+
+      if (password !== user.password) {
+        return done(null, false)
+      }
+
       return done(null, user)
     })
   }
@@ -38,34 +49,30 @@ passport.deserializeUser(function (id, done) {
   })
 })
 
-// Setup Express
+// Setup Express app
 const app = express()
 
 // Middleware
-app.use(require('cookie-parser')())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
-app.use(require('express-session')({secret: 'bourbon', resave: true, saveUninitialized: true}))
+app.use(cookieParser())
+app.use(session({secret: 'bourbon', resave: true, saveUninitialized: true}))
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.post('/login',
-  passport.authenticate('local', {failureRedirect: '/login'}),
-  function (req, res) {
-    res.redirect('/')
-  })
-
 // Routing
-app.get(express.static(path.join(__dirname, '../public')))
+app.use(express.static(path.join(__dirname, '../public')))
 app.get('/api/users', controller.getAllUsers)
 app.get('/api/users/:id', controller.getUserById)
 app.post('/api/users', controller.createUser)
 app.put('/api/users/:id/foods/:foodId/count/:foodCount', controller.updateFoodCount)
-app.get('/login', function (req, res) {
-  res.send('This is the login page')
+app.post('/login', passport.authenticate('local', {failureRedirect: '/login'}), function (req, res) {
+  res.redirect('/')
 })
-app.get('/', function (req, res) {
-  res.send('This is the home page')
+
+// TODO: Delete this /login route and replace functionality in frontend
+app.get('/login', function (req, res) {
+  res.send('This is the temporary login page')
 })
 
 // Start server
