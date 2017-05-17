@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress JSUnusedGlobalSymbols -->
 <html xmlns:v-on="http://www.w3.org/1999/xhtml" lang="en">
 <head>
   <meta charset="UTF-8">
@@ -52,27 +53,29 @@
 
 <script type="text/x-template" id="food-list-template">
   <div>
-    <ul v-for="category in foodCategories" class="list-unstyled">
+    <div v-for="category in foodCategories">
       <h4 class="food-category-name">{{category.categoryName}}</h4>
-      <li v-for="food in category.foods" class="food-li row">
-        <span class="food-name col-xs-7">{{food.foodName}}</span>
-        <div class="counter-div col-xs-5">
-          <button type="button" class="counter-button" aria-label="Decrease"
-                  v-on:click="emitChangeCounter(food._id, -.5)"><span class="glyphicon glyphicon-menu-left"
-                                                                   aria-hidden="true"></span></button>
-          <span class="counter">{{food.counter}}</span>
-          <button type="button" class="counter-button" aria-label="Increase"
-                  v-on:click="emitChangeCounter(food._id, .5)"><span class="glyphicon glyphicon-menu-right"
-                                                                   aria-hidden="true"></span></button>
-        </div>
-      </li>
-    </ul>
+      <ul class="list-unstyled">
+        <li v-for="food in category.foods" class="food-li row">
+          <span class="food-name col-xs-7">{{food.foodName}}</span>
+          <div class="counter-div col-xs-5">
+            <button type="button" class="counter-button" aria-label="Decrease"
+                    v-on:click="emitChangeCounter(food._id, -.5)"><span class="glyphicon glyphicon-menu-left"
+                                                                        aria-hidden="true"></span></button>
+            <span class="counter">{{food.counter}}</span>
+            <button type="button" class="counter-button" aria-label="Increase"
+                    v-on:click="emitChangeCounter(food._id, .5)"><span class="glyphicon glyphicon-menu-right"
+                                                                       aria-hidden="true"></span></button>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </script>
 
 <script>
 
-  var foodListComponent = {
+  const foodListComponent = {
     'food-list': {
       template: '#food-list-template',
       props: [
@@ -81,8 +84,8 @@
       computed: {
         foodCategories: function () {
           if (this.user) {
-            var categories = []
-            var foodsByCategory = []
+            let categories = []
+            let foodsByCategory = []
 
             // Look at all foods and add found category names to categories array
             this.user.foods.forEach(function (food) {
@@ -127,7 +130,7 @@
     }
   }
 
-  var AHE = new Vue({
+  const AHE = new Vue({
       el: '#app',
       name: 'AHE Tracker',
       http: {
