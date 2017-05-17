@@ -21,6 +21,42 @@ const app = express()
 // Middleware
 app.use(bodyParser.json())
 
+// Authentication
+const User = require('./models').User
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy
+app.use(require('cookie-parser')())
+app.use(require('express-session')({secret: 'bourbon', resave: true, saveUninitialized: true}))
+app.use(passport.initialize())
+app.use(passport.session())
+
+passport.use(new LocalStrategy(
+  function (email, password, done) {
+    User.findOne({email: email}, function (err, user) {
+      if (err) { return done(err) }
+      if (!user) { return done(null, false) }
+      if (password !== user.password) { return done(null, false) }
+      return done(null, user)
+    })
+  }
+))
+
+passport.serializeUser(function (user, done) {
+  done(null, user.id)
+})
+
+passport.deserializeUser(function (id, done) {
+  User.findById(id, function (err, user) {
+    done(err, user)
+  })
+})
+
+app.post('/login',
+  passport.authenticate('local', {failureRedirect: '/login'}),
+  function (req, res) {
+    res.redirect('/')
+  })
+
 // Routing
 app.get('/api/users', controller.getAllUsers)
 app.get('/api/users/:id', controller.getUserById)
