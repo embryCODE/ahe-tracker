@@ -1,12 +1,6 @@
 // Modules
 const mongoose = require('mongoose')
 
-// Constants
-const dbUrl = process.env.DB_URL || require('../config').dbUrl
-
-// Connect to mLab Mongo database
-mongoose.connect(dbUrl)
-
 // Create User schema
 const userSchema = new mongoose.Schema({
   name: {type: String, required: true},

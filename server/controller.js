@@ -37,7 +37,7 @@ module.exports.updateFoodCount = function (req, res, next) {
       let requestedFoodId = JSON.stringify(req.params.foodId)
       let requestedFoodCount = parseInt(req.params.foodCount)
 
-      // Loop through foods, find food by foodId, update counter
+      // Loop through foods on user, find food by foodId, update counter
       for (let i = 0; i < foundUser.foods.length; i++) {
         let currentFood = foundUser.foods[i]
         let currentFoodId = JSON.stringify(currentFood._id)

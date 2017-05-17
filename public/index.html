@@ -23,7 +23,9 @@
           integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
           crossorigin="anonymous"></script>
 
+  <!-- Vue -->
   <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/vue-resource@1.3.1/dist/vue-resource.min.js"></script>
 
 </head>
 <body>
@@ -41,7 +43,7 @@
   <div id="app" class="center-block">
 
     <food-list
-      v-bind:foods="foods"
+      v-bind:user="user"
       v-on:increase-counter="increaseCounter"
       v-on:decrease-counter="decreaseCounter">
     </food-list>
@@ -73,106 +75,118 @@
 
   var foodListComponent = {
     'food-list': {
-      props: [
-        'foods'
-      ],
       template: '#food-list-template',
+      props: [
+        'user'
+      ],
       computed: {
         foodCategories: function () {
-          var categories = []
-          var foodsByCategory = []
+          if (this.user) {
+            var categories = []
+            var foodsByCategory = []
 
-          // Look at all foods and add found category names to categories array
-          this.foods.forEach(function (food) {
-            if (categories.indexOf(food.foodCategory) === -1) {
-              categories.push(food.foodCategory)
-            }
-          })
-
-          // Look at categories and add objects with correct shape to foodsByCategory
-          categories.forEach(function (category) {
-            foodsByCategory.push({
-              categoryName: category,
-              foods: []
-            })
-          })
-
-          // Add foods to the appropriate category
-          this.foods.forEach(function (food) {
-            foodsByCategory.forEach(function (category) {
-              if (category.categoryName === food.foodCategory) {
-                category.foods.push(food)
+            // Look at all foods and add found category names to categories array
+            this.user.foods.forEach(function (food) {
+              if (categories.indexOf(food.foodCategory) === -1) {
+                categories.push(food.foodCategory)
               }
             })
-          })
 
-          // Sort each food array by priorityIndex
-          foodsByCategory.forEach(function (category) {
-            category.foods.sort(function (a, b) {
-              return a.priorityIndex - b.priorityIndex
+            // Look at categories and add objects with correct shape to foodsByCategory
+            categories.forEach(function (category) {
+              foodsByCategory.push({
+                categoryName: category,
+                foods: []
+              })
             })
-          })
 
-          return foodsByCategory
+            // Add foods to the appropriate category
+            this.user.foods.forEach(function (food) {
+              foodsByCategory.forEach(function (category) {
+                if (category.categoryName === food.foodCategory) {
+                  category.foods.push(food)
+                }
+              })
+            })
+
+            // Sort each food array by priorityIndex
+            foodsByCategory.forEach(function (category) {
+              category.foods.sort(function (a, b) {
+                return a.priorityIndex - b.priorityIndex
+              })
+            })
+
+            return foodsByCategory
+          }
         }
+      }
+    },
+    methods: {
+      emitIncreaseCounter: function (foodName) {
+        this.$emit('increase-counter', foodName)
       },
-      methods: {
-        emitIncreaseCounter: function (foodName) {
-          this.$emit('increase-counter', foodName)
-        },
-        emitDecreaseCounter: function (foodName) {
-          this.$emit('decrease-counter', foodName)
-        }
+      emitDecreaseCounter: function (foodName) {
+        this.$emit('decrease-counter', foodName)
       }
     }
   }
 
   var AHE = new Vue({
-    el: '#app',
-    name: 'AHE Tracker',
-    components: foodListComponent,
-    data: {
-      foods: []
-    },
-    methods: {
-      increaseCounter: function (foodName) {
-        this.foods.forEach(function (food) {
-          if (food.foodName === foodName) {
-            food.counter += .5
-            fetch('/api/v1/food/' + food._id, {
-              method: 'post',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(food)
-            })
-          }
-        })
+      el: '#app',
+      name: 'AHE Tracker',
+      http: {
+        root: '/root'
       },
-      decreaseCounter: function (foodName) {
-        this.foods.forEach(function (food) {
-          if (food.foodName === foodName) {
-            food.counter -= .5
-            fetch('/api/v1/food/' + food._id, {
-              method: 'post',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(food)
+      data: {
+        user: null
+      },
+      components: foodListComponent,
+      methods: {
+        increaseCounter: function (foodName) {
+          this.foods.forEach(function (food) {
+            if (food.foodName === foodName) {
+              food.counter += .5
+              fetch('/api/v1/food/' + food._id, {
+                method: 'post',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(food)
+              })
+            }
+          })
+        },
+        decreaseCounter: function (foodName) {
+          this.foods.forEach(function (food) {
+            if (food.foodName === foodName) {
+              food.counter -= .5
+              fetch('/api/v1/food/' + food._id, {
+                method: 'post',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(food)
+              })
+            }
+          })
+        },
+        getUser: function (userId) {
+          return this.$http.get('/api/users/' + userId)
+            .then(user => {
+              return user.data
+            }, err => {
+              console.log(err)
             })
-          }
+        }
+      },
+      created: function () {
+        // TODO: Replace this temporary hard-coding of Mason's user id
+        this.getUser('591c4e51dee8e88498e7aa03').then(user => {
+          this.user = user
         })
       }
-    },
-    created: function () {
-      fetch('/api/v1/food').then(function (res) {
-        return res.json()
-      })
-        .then(json => {
-          this.foods = json
-        })
     }
-  })
+  )
 
 </script>
 
