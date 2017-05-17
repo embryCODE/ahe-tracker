@@ -1,37 +1,26 @@
+// Modules
 const express = require('express')
 const bodyParser = require('body-parser')
-const methodOverride = require('method-override')
-const mongoose = require('mongoose')
-const restify = require('express-restify-mongoose')
-const app = express()
-const router = express.Router()
 const path = require('path')
+const controller = require('./controller')
+
+// Constants
 const port = process.env.PORT || 3000
-const dbUrl = process.env.DB_URL || require('../config').dbUrl
 
+// Setup Express
+const app = express()
+
+// Middleware
 app.use(bodyParser.json())
-app.use(methodOverride())
 
-// Connect to mLab Mongo database
-mongoose.connect(dbUrl)
+// Routing
+app.get('/', express.static(path.join(__dirname, '../public')))
+app.get('/api/users', controller.getAllUsers)
+app.get('/api/users/:id', controller.getUserById)
+app.post('/api/users', controller.createUser)
+app.put('/api/users/:id/:foodId/:foodCount', controller.updateFoodCount)
 
-// Create Food schema
-const foodSchema = new mongoose.Schema({
-  foodName: String,
-  foodCategory: String,
-  priorityIndex: Number,
-  counter: Number
-})
-
-// Create Food model
-const Food = mongoose.model('Food', foodSchema)
-
-// Create endpoints based on Food model
-restify.serve(router, Food)
-
-app.use('/', express.static(path.join(__dirname, '../public')))
-app.use(router)
-
+// Start server
 app.listen(port, () => {
   console.log('Express server listening on port ' + port)
 })
