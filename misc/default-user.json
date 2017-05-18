@@ -73,3 +73,83 @@
     ]
   }
 ]
+
+[
+  {
+    foodName: 'Vegetables',
+    foodCategory: 'Essential',
+    priorityIndex: 0,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Fruits',
+    foodCategory: 'Essential',
+    priorityIndex: 1,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Nuts, Seeds, and Healthy Oils',
+    foodCategory: 'Recommended',
+    priorityIndex: 2,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Fish and High-Quality Meats',
+    foodCategory: 'Recommended',
+    priorityIndex: 3,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Whole Grains',
+    foodCategory: 'Recommended',
+    priorityIndex: 4,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Dairy',
+    foodCategory: 'Recommended',
+    priorityIndex: 5,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Refined Grains',
+    foodCategory: 'Acceptable',
+    priorityIndex: 6,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Other Foods',
+    foodCategory: 'Acceptable',
+    priorityIndex: 7,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Low-Quality Meats',
+    foodCategory: 'Acceptable',
+    priorityIndex: 8,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Sweets',
+    foodCategory: 'Acceptable',
+    priorityIndex: 9,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  },
+  {
+    foodName: 'Fried Foods',
+    foodCategory: 'Acceptable',
+    priorityIndex: 10,
+    counter: 0,
+    foodId: mongoose.Schema.Types.ObjectId
+  }
+]
