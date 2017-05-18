@@ -1,7 +1,7 @@
 // Modules
 const User = require('./models').User
 
-module.exports.getAllUsers = function (req, res, next) {
+module.exports.getAllUsers = function (req, res) {
   User.find()
     .then(function (results) {
       res.json(results)
@@ -11,7 +11,7 @@ module.exports.getAllUsers = function (req, res, next) {
     })
 }
 
-module.exports.getUserById = function (req, res, next) {
+module.exports.getUserById = function (req, res) {
   User.findById(req.params.id)
     .then(function (results) {
       res.json(results)
@@ -21,7 +21,7 @@ module.exports.getUserById = function (req, res, next) {
     })
 }
 
-module.exports.createUser = function (req, res, next) {
+module.exports.createUser = function (req, res) {
   User.create(req.body)
     .then(function (results) {
       res.json(results)
@@ -31,7 +31,7 @@ module.exports.createUser = function (req, res, next) {
     })
 }
 
-module.exports.updateFoodCount = function (req, res, next) {
+module.exports.updateFoodCount = function (req, res) {
   User.findById(req.params.id)
     .then(function (foundUser) {
       let requestedFoodId = JSON.stringify(req.params.foodId)
