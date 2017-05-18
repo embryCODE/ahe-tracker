@@ -189,11 +189,11 @@
           this.$http.get('/loggedin')
             .then(res => {
               if (res.data) {
-                console.log('You are logged in')
+                console.log(res.data.email + ' is logged in')
                 this.loggedIn = true
                 this.user = res.data
               } else {
-                console.log('You are not logged in')
+                console.log('Logged out')
                 this.loggedIn = false
                 this.user = null
               }
