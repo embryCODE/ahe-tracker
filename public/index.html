@@ -31,21 +31,25 @@
 <body>
 
 <div id="wrapper" class="container">
-  <h1>Agnostic Healthy Eating Tracker</h1>
-  <p class="main-description">
-    Eat each type of “essential” food more often than any type of “recommended” food. Eat each type of “recommended”
-    food more often than any type of “acceptable” food. For extra credit, eat each of the ten food types in the
-    diet-quality hierarchy more often than any food type of lower rank.
-  </p>
-
-  <hr>
 
   <div id="app" class="center-block">
 
-    <food-list
-      v-bind:user="user"
-      v-on:change-counter="changeCounter">
-    </food-list>
+    <div class="header row">
+      <h1 class="col-xs-8">Agnostic Healthy Eating Tracker</h1>
+      <button class="col-xs-4" v-on:click="logout">LOGOUT</button>
+    </div>
+
+    <p class="main-description">
+      Eat each type of “essential” food more often than any type of “recommended” food. Eat each type of “recommended”
+      food more often than any type of “acceptable” food. For extra credit, eat each of the ten food types in the
+      diet-quality hierarchy more often than any food type of lower rank.
+    </p>
+
+    <hr>
+
+    <login v-if="!loggedIn" v-on:login-event="login"></login>
+
+    <food-list v-if="loggedIn" v-bind:user="user" v-on:change-counter="changeCounter"></food-list>
 
   </div>
 </div>
@@ -75,56 +79,53 @@
 <script>
 
   const foodListComponent = {
-    'food-list': {
-      template: '#food-list-template',
-      props: [
-        'user'
-      ],
-      computed: {
-        foodCategories: function () {
-          if (this.user) {
-            let categories = []
-            let foodsByCategory = []
+    template: '#food-list-template',
+    props: [
+      'user'
+    ],
+    computed: {
+      foodCategories: function () {
+        let categories = []
+        let foodsByCategory = []
 
-            // Look at all foods and add found category names to categories array
-            this.user.foods.forEach(function (food) {
-              if (categories.indexOf(food.foodCategory) === -1) {
-                categories.push(food.foodCategory)
-              }
-            })
-
-            // Look at categories and add objects with correct shape to foodsByCategory
-            categories.forEach(function (category) {
-              foodsByCategory.push({
-                categoryName: category,
-                foods: []
-              })
-            })
-
-            // Add foods to the appropriate category
-            this.user.foods.forEach(function (food) {
-              foodsByCategory.forEach(function (category) {
-                if (category.categoryName === food.foodCategory) {
-                  category.foods.push(food)
-                }
-              })
-            })
-
-            // Sort each food array by priorityIndex
-            foodsByCategory.forEach(function (category) {
-              category.foods.sort(function (a, b) {
-                return a.priorityIndex - b.priorityIndex
-              })
-            })
-
-            return foodsByCategory
+        // Look at all foods and add found category names to categories array
+        this.user.foods.forEach(function (food) {
+          if (categories.indexOf(food.foodCategory) === -1) {
+            categories.push(food.foodCategory)
           }
-        }
-      },
-      methods: {
-        emitChangeCounter: function (foodId, changeAmount) {
-          this.$emit('change-counter', foodId, changeAmount)
-        }
+        })
+
+        // Look at categories and add objects with correct shape to foodsByCategory
+        categories.forEach(function (category) {
+          foodsByCategory.push({
+            categoryName: category,
+            foods: []
+          })
+        })
+
+        // Add foods to the appropriate category
+        this.user.foods.forEach(function (food) {
+          foodsByCategory.forEach(function (category) {
+            if (category.categoryName === food.foodCategory) {
+              category.foods.push(food)
+            }
+          })
+        })
+
+        // Sort each food array by priorityIndex
+        foodsByCategory.forEach(function (category) {
+          category.foods.sort(function (a, b) {
+            return a.priorityIndex - b.priorityIndex
+          })
+        })
+
+        return foodsByCategory
+      }
+
+    },
+    methods: {
+      emitChangeCounter: function (foodId, changeAmount) {
+        this.$emit('change-counter', foodId, changeAmount)
       }
     }
   }
@@ -136,9 +137,33 @@
         root: '/root'
       },
       data: {
-        user: null
+        user: null,
+        loggedIn: false
       },
-      components: foodListComponent,
+      components: {
+        'food-list': foodListComponent,
+        'login': {
+          template: `
+            <div>
+              <h4>Please login</h4>
+              <input type="text" placeholder="email" v-model="email">
+              <input type="password" placeholder="password" v-model="password">
+              <button v-on:click="login">LOGIN</button>
+            </div>
+          `,
+          data: function () {
+            return {
+              email: '',
+              password: ''
+            }
+          },
+          methods: {
+            login () {
+              this.$emit('login-event', this.email, this.password)
+            }
+          }
+        }
+      },
       methods: {
         changeCounter: function (foodId, changeAmount) {
           const self = this
@@ -157,15 +182,45 @@
             .then(user => {
               return user.data
             }, err => {
-              console.log(err)
+              console.error('There was an error getting that user', err)
             })
+        },
+        checkLoggedIn: function () {
+          this.$http.get('/loggedin')
+            .then(res => {
+              if (res.data) {
+                console.log('You are logged in')
+                this.loggedIn = true
+                this.user = res.data
+              } else {
+                console.log('You are not logged in')
+                this.loggedIn = false
+                this.user = null
+              }
+            }, err => {
+              console.error('There was an error checking logged in status', err)
+            })
+        },
+        login: function (email, password) {
+          this.$http.post('/login', {email: email, password: password})
+            .then(res => {
+              this.checkLoggedIn()
+            }, err => {
+              console.error('There was an error logging in', err)
+            })
+        },
+        logout: function () {
+          this.$http.post('/logout')
+            .then(res => {
+                this.checkLoggedIn()
+              }, err => {
+                console.error('There was an error logging out', err)
+              }
+            )
         }
       },
       created: function () {
-        // TODO: Replace this temporary hard-coding of Mason's user id
-        this.getUser('591c4e51dee8e88498e7aa03').then(user => {
-          this.user = user
-        })
+        this.checkLoggedIn()
       }
     }
   )
