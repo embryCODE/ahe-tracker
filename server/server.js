@@ -77,10 +77,10 @@ app.use(express.static(path.join(__dirname, '../public')))
 
 app.get('/api/users', checkAuthorization, controller.getAllUsers)
 app.get('/api/users/:id', checkAuthorization, controller.getUserById)
-app.post('/api/users', checkAuthorization, controller.createUser)
+app.post('/api/users', controller.createUser)
 app.put('/api/users/:id/foods/:foodId/count/:foodCount', checkAuthorization, controller.updateFoodCount)
 
-app.post('/login', passport.authenticate('local', {failureRedirect: '/login'}), (req, res) => {
+app.post('/login', passport.authenticate('local'), (req, res) => {
   res.redirect('/')
 })
 app.post('/logout', (req, res) => {
@@ -93,11 +93,6 @@ app.get('/loggedin', (req, res) => {
   } else {
     res.send(false)
   }
-})
-
-// TODO: Delete this /login route and replace functionality in frontend
-app.get('/login', function (req, res) {
-  res.send('This is the temporary login page')
 })
 
 // Start server

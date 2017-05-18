@@ -6,6 +6,10 @@
   max-width: 750px;
 }
 
+.logout-btn {
+  margin-top: 25px;
+}
+
 .counter-button {
   cursor: pointer;
 }

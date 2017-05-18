@@ -35,8 +35,8 @@
   <div id="app" class="center-block">
 
     <div class="header row">
-      <h1 class="col-xs-8">Agnostic Healthy Eating Tracker</h1>
-      <button class="col-xs-4" v-on:click="logout">LOGOUT</button>
+      <h1 class="col-xs-10">Agnostic Healthy Eating Tracker</h1>
+      <button class="btn btn-primary logout-btn col-xs-2" v-on:click="logout" v-if="loggedIn">LOGOUT</button>
     </div>
 
     <p class="main-description">
@@ -144,12 +144,12 @@
         'food-list': foodListComponent,
         'login': {
           template: `
-            <div>
+            <form v-on:submit.prevent="login">
               <h4>Please login</h4>
-              <input type="text" placeholder="email" v-model="email">
-              <input type="password" placeholder="password" v-model="password">
-              <button v-on:click="login">LOGIN</button>
-            </div>
+              <input type="text" placeholder="Enter email" v-model="email">
+              <input type="password" placeholder="Enter password" v-model="password">
+              <button class="btn btn-primary login-btn">LOGIN</button>
+            </form>
           `,
           data: function () {
             return {
