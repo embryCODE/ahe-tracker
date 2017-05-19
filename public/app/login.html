@@ -1,0 +1,32 @@
+<blueprint>
+  <prop find="login"/>
+</blueprint>
+
+<display>
+
+  <form>
+    <h4>Please login</h4>
+    <input id="email" bind="@keyup | *submit" type="text" placeholder="Enter email">
+    <input id="password" bind="@keyup | *submit" type="password" placeholder="Enter password">
+    <div bind="@click | *invokeLogin" class="btn btn-primary login-btn">LOGIN</div>
+  </form>
+
+</display>
+
+<script>
+
+  $.cog({
+    invokeLogin: function () {
+      this.login.request(JSON.stringify({
+        email: this.email.raw().value,
+        password: this.password.raw().value
+      }))
+    },
+    submit: function (e) {
+      if (e.keyCode === 13) {
+        this.invokeLogin()
+      }
+    }
+  })
+
+</script>

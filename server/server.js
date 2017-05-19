@@ -81,7 +81,8 @@ app.post('/api/users', controller.createUser)
 app.put('/api/users/:id/foods/:foodId/count/:foodCount', checkAuthorization, controller.updateFoodCount)
 
 app.post('/login', passport.authenticate('local'), (req, res) => {
-  res.redirect('/')
+  res.messageToScott = 'It worked'
+  res.sendStatus(200)
 })
 app.post('/logout', (req, res) => {
   req.logOut()
