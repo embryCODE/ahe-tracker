@@ -23,10 +23,6 @@
           integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
           crossorigin="anonymous"></script>
 
-  <!-- Vue -->
-  <script src="https://unpkg.com/vue"></script>
-  <script src="https://unpkg.com/vue-resource@1.3.1/dist/vue-resource.min.js"></script>
-
 </head>
 <body>
 
@@ -36,7 +32,7 @@
 
     <div class="header row">
       <h1 class="col-xs-10">Agnostic Healthy Eating Tracker</h1>
-      <button class="btn btn-primary logout-btn col-xs-2" v-on:click="logout" v-if="loggedIn">LOGOUT</button>
+      <button class="btn btn-primary logout-btn col-xs-2">LOGOUT</button>
     </div>
 
     <p class="main-description">
@@ -47,185 +43,35 @@
 
     <hr>
 
-    <login v-if="!loggedIn" v-on:login-event="login"></login>
+    <form>
+      <h4>Please login</h4>
+      <input type="text" placeholder="Enter email">
+      <input type="password" placeholder="Enter password">
+      <button class="btn btn-primary login-btn">LOGIN</button>
+    </form>
 
-    <food-list v-if="loggedIn" v-bind:user="user" v-on:change-counter="changeCounter"></food-list>
+    <div>
+      <div>
+        <h4 class="food-category-name">Essential</h4>
+        <ul class="list-unstyled">
+          <li class="food-li row">
+            <span class="food-name col-xs-7">Vegetables</span>
+            <div class="counter-div col-xs-5">
+              <button type="button" class="counter-button" aria-label="Decrease">
+                <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+              </button>
+              <span class="counter">0</span>
+              <button type="button" class="counter-button" aria-label="Increase">
+                <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
 
   </div>
 </div>
-
-<script type="text/x-template" id="food-list-template">
-  <div>
-    <div v-for="category in foodCategories">
-      <h4 class="food-category-name">{{category.categoryName}}</h4>
-      <ul class="list-unstyled">
-        <li v-for="food in category.foods" class="food-li row">
-          <span class="food-name col-xs-7">{{food.foodName}}</span>
-          <div class="counter-div col-xs-5">
-            <button type="button" class="counter-button" aria-label="Decrease"
-                    v-on:click="emitChangeCounter(food._id, -.5)"><span class="glyphicon glyphicon-menu-left"
-                                                                        aria-hidden="true"></span></button>
-            <span class="counter">{{food.counter}}</span>
-            <button type="button" class="counter-button" aria-label="Increase"
-                    v-on:click="emitChangeCounter(food._id, .5)"><span class="glyphicon glyphicon-menu-right"
-                                                                       aria-hidden="true"></span></button>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</script>
-
-<script>
-
-  const foodListComponent = {
-    template: '#food-list-template',
-    props: [
-      'user'
-    ],
-    computed: {
-      foodCategories: function () {
-        let categories = []
-        let foodsByCategory = []
-
-        // Look at all foods and add found category names to categories array
-        this.user.foods.forEach(function (food) {
-          if (categories.indexOf(food.foodCategory) === -1) {
-            categories.push(food.foodCategory)
-          }
-        })
-
-        // Look at categories and add objects with correct shape to foodsByCategory
-        categories.forEach(function (category) {
-          foodsByCategory.push({
-            categoryName: category,
-            foods: []
-          })
-        })
-
-        // Add foods to the appropriate category
-        this.user.foods.forEach(function (food) {
-          foodsByCategory.forEach(function (category) {
-            if (category.categoryName === food.foodCategory) {
-              category.foods.push(food)
-            }
-          })
-        })
-
-        // Sort each food array by priorityIndex
-        foodsByCategory.forEach(function (category) {
-          category.foods.sort(function (a, b) {
-            return a.priorityIndex - b.priorityIndex
-          })
-        })
-
-        return foodsByCategory
-      }
-
-    },
-    methods: {
-      emitChangeCounter: function (foodId, changeAmount) {
-        this.$emit('change-counter', foodId, changeAmount)
-      }
-    }
-  }
-
-  const rootVue = new Vue({
-      el: '#app',
-      name: 'AHE Tracker',
-      http: {
-        root: '/root'
-      },
-      data: {
-        user: null,
-        loggedIn: false
-      },
-      components: {
-        'food-list': foodListComponent,
-        'login': {
-          template: `
-            <form v-on:submit.prevent="login">
-              <h4>Please login</h4>
-              <input type="text" placeholder="Enter email" v-model="email">
-              <input type="password" placeholder="Enter password" v-model="password">
-              <button class="btn btn-primary login-btn">LOGIN</button>
-            </form>
-          `,
-          data: function () {
-            return {
-              email: '',
-              password: ''
-            }
-          },
-          methods: {
-            login () {
-              this.$emit('login-event', this.email, this.password)
-            }
-          }
-        }
-      },
-      methods: {
-        changeCounter: function (foodId, changeAmount) {
-          const self = this
-          this.user.foods.forEach(function (food) {
-            if (food._id === foodId) {
-              const userId = self.user._id
-
-              food.counter += changeAmount
-
-              self.$http.put(`/api/users/${userId}/foods/${foodId}/count/${food.counter}`)
-            }
-          })
-        },
-        getUser: function (userId) {
-          return this.$http.get('/api/users/' + userId)
-            .then(user => {
-              return user.data
-            }, err => {
-              console.error('There was an error getting that user', err)
-            })
-        },
-        checkLoggedIn: function () {
-          this.$http.get('/loggedin')
-            .then(res => {
-              if (res.data) {
-                console.log(res.data.email + ' is logged in')
-                this.loggedIn = true
-                this.user = res.data
-              } else {
-                console.log('Logged out')
-                this.loggedIn = false
-                this.user = null
-              }
-            }, err => {
-              console.error('There was an error checking logged in status', err)
-            })
-        },
-        login: function (email, password) {
-          this.$http.post('/login', { email: email, password: password })
-            .then(res => {
-              this.checkLoggedIn()
-            }, err => {
-              console.error('There was an error logging in', err)
-            })
-        },
-        logout: function () {
-          this.$http.post('/logout')
-            .then(res => {
-                this.checkLoggedIn()
-              }, err => {
-                console.error('There was an error logging out', err)
-              }
-            )
-        }
-      },
-      created: function () {
-        this.checkLoggedIn()
-      }
-    }
-  )
-
-</script>
 
 </body>
 </html>
