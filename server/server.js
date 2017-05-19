@@ -20,20 +20,20 @@ mongoose.Promise = global.Promise
 mongoose.connect(dbUrl)
 
 // Passport setup
-passport.use(new Strategy({usernameField: 'email'},
+passport.use(new Strategy({ usernameField: 'email' },
   function (email, password, done) {
-    User.findOne({email: email}, function (err, user) {
+    User.findOne({ email: email }, function (err, user) {
       if (err) {
         return done(err)
       }
 
       if (!user) {
-        return done(null, false, {message: 'User not found'})
+        return done(null, false, { message: 'User not found' })
       }
 
       // TODO: Secure all passwords with bcrypt or something
       if (password !== user.password) {
-        return done(null, false, {message: 'Incorrect password'})
+        return done(null, false, { message: 'Incorrect password' })
       }
 
       return done(null, user)
@@ -65,10 +65,10 @@ const app = express()
 
 // Middleware
 app.set('port', process.env.PORT || 3000)
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cookieParser())
-app.use(session({secret: 'bourbon', resave: true, saveUninitialized: true}))
+app.use(session({ secret: 'bourbon', resave: true, saveUninitialized: true }))
 app.use(passport.initialize())
 app.use(passport.session())
 

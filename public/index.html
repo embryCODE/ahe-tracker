@@ -202,7 +202,7 @@
             })
         },
         login: function (email, password) {
-          this.$http.post('/login', {email: email, password: password})
+          this.$http.post('/login', { email: email, password: password })
             .then(res => {
               this.checkLoggedIn()
             }, err => {
