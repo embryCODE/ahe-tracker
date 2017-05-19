@@ -1,0 +1,30 @@
+<blueprint>
+
+  <data name="foods" />
+
+  <chain node="foodList" url="/app/food-row.html" source="foods" item="food"/>
+
+  <sensor watch="foodCategory" transform="toFoods" pipe="foods"/>
+
+</blueprint>
+
+<display>
+
+  <div>
+    <h4 bind="foodCategory.categoryName | #innerText" class="food-category-name"></h4>
+    <div>
+      <ul id="foodList" class="list-unstyled"></ul>
+    </div>
+  </div>
+
+</display>
+
+<script>
+
+  $.cog({
+    toFoods: function(foodCategory) {
+      return foodCategory.foods
+    }
+  })
+
+</script>

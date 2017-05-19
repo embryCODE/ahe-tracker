@@ -1,13 +1,17 @@
 <blueprint>
 
+  <cog node="content" url="data view"/>
+
+  <data name="user" value="bool false"/>
+  <data name="view"/>
+
+  <sensor watch="login, logout" run="checkLoggedIn"/>
+  <sensor watch="loggedIn" transform="toJSON" pipe="user"/>
+  <sensor watch="user" transform="toView" pipe="view"/>
+
   <net name='login'
        url='/login'
        verb='POST'
-       prop='true'/>
-
-  <net name='loggedIn'
-       url='/loggedin'
-       verb='GET'
        prop='true'/>
 
   <net name='logout'
@@ -15,14 +19,10 @@
        verb='POST'
        prop='true'/>
 
-  <data name="user" value="bool false"/>
-  <data name="view" />
-
-  <sensor watch="login, logout" run="checkLoggedIn"/>
-  <sensor watch="loggedIn" transform ="toJSON" pipe="user"/>
-  <sensor watch="user" transform="toView" pipe="view"/>
-
-  <cog node="content" url="data view"/>
+  <net name='loggedIn'
+       url='/loggedin'
+       verb='GET'
+       prop='true'/>
 
 </blueprint>
 
@@ -48,11 +48,13 @@
 <script>
 
   $.cog({
+    init: function () {
+      this.checkLoggedIn()
+    },
     checkLoggedIn: function () {
       this.loggedIn.request()
     },
     toView: function (user) {
-      console.log(typeof user, user)
       return user ? '/app/food-list.html' : '/app/login.html'
     },
     toJSON: function (data) {
@@ -60,9 +62,6 @@
     },
     invokeLogout: function () {
       this.logout.request()
-    },
-    debug: function (msg) {
-      console.log('Debugged, yo:', msg)
     }
   })
 

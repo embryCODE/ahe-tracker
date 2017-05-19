@@ -1,0 +1,64 @@
+<blueprint>
+
+  <data name="counter"/>
+  <data name="updateCounter"/>
+
+  <sensor watch="food" transform="toCounter" pipe="counter"/>
+  <sensor watch="updateCounter" pipe="counter"/>
+  <sensor watch="updateCounter" gather="food, user" run="updateServerFoodCount"/>
+
+</blueprint>
+
+<display>
+
+  <li class="food-li row">
+    <span bind="food.foodName | #innerText" class="food-name col-xs-7">Vegetables</span>
+    <div class="counter-div col-xs-5">
+      <button type="button"
+              class="counter-button"
+              aria-label="Decrease">
+        <span bind="@click | counter | *decreaseCounter | updateCounter"
+              class="glyphicon glyphicon-menu-left"
+              aria-hidden="true">
+        </span>
+      </button>
+      <span bind="counter | #innerText" class="counter">0</span>
+      <button type="button"
+              class="counter-button"
+              aria-label="Increase">
+        <span bind="@click | counter | *increaseCounter | updateCounter"
+              class="glyphicon glyphicon-menu-right"
+              aria-hidden="true">
+        </span>
+      </button>
+    </div>
+  </li>
+
+</display>
+
+<script>
+
+  $.cog({
+    toCounter: function (food) {
+      return food.counter
+    },
+    increaseCounter: function (counter) {
+      return counter + .5
+    },
+    decreaseCounter: function (counter) {
+      return counter - .5
+    },
+    updateServerFoodCount: function (msg) {
+      $.ajax({
+        url: '/api/users/'
+        + msg.user._id
+        + '/foods/'
+        + msg.food._id
+        + '/count/'
+        + msg.updateCounter,
+        type: 'PUT'
+      })
+    }
+  })
+
+</script>

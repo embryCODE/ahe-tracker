@@ -1,25 +1,62 @@
+<blueprint>
+
+  <data name="foodsByCategory"/>
+
+  <chain node="listHolder" url="/app/food-category.html" source="foodsByCategory" item="foodCategory"/>
+
+  <sensor watch="user" filter="doesUserExist" transform="toFoodsByCategory" pipe="foodsByCategory"/>
+
+</blueprint>
+
 <display>
 
-  <pre></pre>
-
-  <!--<div>-->
-    <!--<div>-->
-      <!--<h4 class="food-category-name">Essential</h4>-->
-      <!--<ul class="list-unstyled">-->
-        <!--<li class="food-li row">-->
-          <!--<span class="food-name col-xs-7">Vegetables</span>-->
-          <!--<div class="counter-div col-xs-5">-->
-            <!--<button type="button" class="counter-button" aria-label="Decrease">-->
-              <!--<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>-->
-            <!--</button>-->
-            <!--<span class="counter">0</span>-->
-            <!--<button type="button" class="counter-button" aria-label="Increase">-->
-              <!--<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>-->
-            <!--</button>-->
-          <!--</div>-->
-        <!--</li>-->
-      <!--</ul>-->
-    <!--</div>-->
-  <!--</div>-->
+  <div id="listHolder"></div>
 
 </display>
+
+<script>
+
+  $.cog({
+    toFoodsByCategory: function (user) {
+        var categories = []
+        var foodsByCategory = []
+
+        // Look at all foods and add found category names to categories array
+        user.foods.forEach(function (food) {
+          if (categories.indexOf(food.foodCategory) === -1) {
+            categories.push(food.foodCategory)
+          }
+        })
+
+        // Look at categories and add objects with correct shape to foodsByCategory
+        categories.forEach(function (category) {
+          foodsByCategory.push({
+            categoryName: category,
+            foods: []
+          })
+        })
+
+        // Add foods to the appropriate category
+        user.foods.forEach(function (food) {
+          foodsByCategory.forEach(function (category) {
+            if (category.categoryName === food.foodCategory) {
+              category.foods.push(food)
+            }
+          })
+        })
+
+        // Sort each food array by priorityIndex
+        foodsByCategory.forEach(function (category) {
+          category.foods.sort(function (a, b) {
+            return a.priorityIndex - b.priorityIndex
+          })
+        })
+
+        return foodsByCategory
+      },
+    doesUserExist: function (user) {
+      return !!user
+    }
+  })
+
+</script>
