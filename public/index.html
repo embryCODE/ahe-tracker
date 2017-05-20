@@ -26,21 +26,10 @@
 
 </div>
 
-<!-- Bootstrap & jQuery JS -->
-<script src="js/lib/jquery.js"></script>
-<!--<script-->
-  <!--src="https://code.jquery.com/jquery-3.2.1.min.js"-->
-  <!--integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="-->
-  <!--crossorigin="anonymous"></script>-->
-<script
-  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-  integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-  crossorigin="anonymous"></script>
-
 <!-- Cognition JS -->
-<script src="js/lib/d3.min.js"></script>
 <script src="js/lib/moment.min.js"></script>
 <script src="js/lib/lodash_min.js"></script>
+<script src="js/lib/jquery.js"></script>
 <script src="js/lib/uuid.js"></script>
 <script src="js/lib/seele.js"></script>
 <script src="js/lib/catbus.js"></script>
@@ -53,10 +42,16 @@
 <script src="js/lib/kodama.js"></script>
 <script src="js/lib/saveAs.js"></script>
 
+<!-- Bootstrap JS -->
+<script
+  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+  integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+  crossorigin="anonymous"></script>
+
 <script>
 
   $(function () {
-    $.cognition.init($('#app'), 'app/app.html')
+    $.cognition.init($('#app'), 'app/_app.html')
   })
 
 </script>
