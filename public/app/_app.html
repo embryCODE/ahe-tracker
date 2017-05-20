@@ -2,8 +2,8 @@
 
   <cog node="content" url="data view"/>
 
-  <data name="user" value="bool false"/>
   <data name="view"/>
+  <data name="user" value="bool false"/>
 
   <sensor watch="login, logout" run="checkLoggedIn"/>
   <sensor watch="loggedIn" transform="toJSON" pipe="user"/>
