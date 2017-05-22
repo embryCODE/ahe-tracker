@@ -65,11 +65,10 @@
 
     <food-list inline-template v-if="loggedIn" v-bind:user="user" v-on:change-counter="changeCounter">
       <div>
-        <p class="main-description">
-          Eat each type of “essential” food more often than any type of “recommended” food. Eat each type of
-          “recommended”
-          food more often than any type of “acceptable” food. For extra credit, eat each of the ten food types in the
-          diet-quality hierarchy more often than any food type of lower rank.
+        <p class="main-description lead">
+          Eat each type of <em>essential</em> food more often than any type of <em>recommended</em> food. Eat each type
+          of <em>recommended</em> food more often than any type of <em>acceptable</em> food. For extra credit, eat each
+          of the ten food types in the diet-quality hierarchy more often than any food type of lower rank.
         </p>
 
         <hr>
