@@ -53,13 +53,18 @@
     <hr>
 
     <login inline-template v-if="!loggedIn" v-on:login-event="login">
-      <form v-on:submit.prevent="login" class="form-horizontal">
-        <h4 class="col-sm-12">Please login:</h4>
-        <div class="col-sm-5"><input type="text" placeholder="Enter email" v-model="email" class="form-control"></div>
-        <div class="col-sm-5"><input type="password" placeholder="Enter password" v-model="password"
-                                     class="form-control"></div>
-        <div class="col-sm-2">
-          <button class="btn btn-primary login-btn">LOGIN</button>
+      <form v-on:submit.prevent="login" class="login-form form-horizontal">
+        <div class="form-group">
+          <h4 class="col-sm-12">Please login:</h4>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-5"><input type="text" placeholder="Enter email" v-model="email"
+                                                      class="form-control"></div>
+          <div class="col-sm-5"><input type="password" placeholder="Enter password" v-model="password"
+                                                      class="form-control"></div>
+          <div class="col-sm-2 add-margin-top">
+            <button class="btn btn-primary login-btn">LOGIN</button>
+          </div>
         </div>
       </form>
     </login>
