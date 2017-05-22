@@ -39,7 +39,9 @@
 
     <div class="header row">
       <h1 class="col-sm-10">Agnostic Healthy Eating Tracker</h1>
-      <div class="col-sm-2 logout-btn-div"><button class="btn btn-primary" v-on:click="logout" v-if="loggedIn">LOGOUT</button></div>
+      <div class="col-sm-2 logout-btn-div">
+        <button class="btn btn-primary" v-on:click="logout" v-if="loggedIn">LOGOUT</button>
+      </div>
     </div>
 
     <p class="main-description">
@@ -50,39 +52,46 @@
 
     <hr>
 
-    <login v-if="!loggedIn" v-on:login-event="login"></login>
+    <login inline-template v-if="!loggedIn" v-on:login-event="login">
+      <form v-on:submit.prevent="login" class="form-horizontal">
+        <h4 class="col-sm-12">Please login:</h4>
+        <div class="col-sm-5"><input type="text" placeholder="Enter email" v-model="email" class="form-control"></div>
+        <div class="col-sm-5"><input type="password" placeholder="Enter password" v-model="password"
+                                     class="form-control"></div>
+        <div class="col-sm-2">
+          <button class="btn btn-primary login-btn">LOGIN</button>
+        </div>
+      </form>
+    </login>
 
-    <food-list v-if="loggedIn" v-bind:user="user" v-on:change-counter="changeCounter"></food-list>
+    <food-list inline-template v-if="loggedIn" v-bind:user="user" v-on:change-counter="changeCounter">
+      <div>
+        <div v-for="category in foodCategories">
+          <h4 class="food-category-name">{{category.categoryName}}</h4>
+          <ul class="list-unstyled">
+            <li v-for="food in category.foods" class="food-li row">
+              <span class="food-name col-xs-7">{{food.foodName}}</span>
+              <div class="counter-div col-xs-5">
+                <button type="button" class="counter-button" aria-label="Decrease"
+                        v-on:click="emitChangeCounter(food._id, -.5)"><span class="glyphicon glyphicon-menu-left"
+                                                                            aria-hidden="true"></span></button>
+                <span class="counter">{{food.counter}}</span>
+                <button type="button" class="counter-button" aria-label="Increase"
+                        v-on:click="emitChangeCounter(food._id, .5)"><span class="glyphicon glyphicon-menu-right"
+                                                                           aria-hidden="true"></span></button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </food-list>
 
   </div>
 </div>
 
-<script type="text/x-template" id="food-list-template">
-  <div>
-    <div v-for="category in foodCategories">
-      <h4 class="food-category-name">{{category.categoryName}}</h4>
-      <ul class="list-unstyled">
-        <li v-for="food in category.foods" class="food-li row">
-          <span class="food-name col-xs-7">{{food.foodName}}</span>
-          <div class="counter-div col-xs-5">
-            <button type="button" class="counter-button" aria-label="Decrease"
-                    v-on:click="emitChangeCounter(food._id, -.5)"><span class="glyphicon glyphicon-menu-left"
-                                                                        aria-hidden="true"></span></button>
-            <span class="counter">{{food.counter}}</span>
-            <button type="button" class="counter-button" aria-label="Increase"
-                    v-on:click="emitChangeCounter(food._id, .5)"><span class="glyphicon glyphicon-menu-right"
-                                                                       aria-hidden="true"></span></button>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</script>
-
 <script>
 
   const foodListComponent = {
-    template: '#food-list-template',
     props: [
       'user'
     ],
@@ -133,6 +142,19 @@
     }
   }
 
+  const loginComponent = {
+    data: function () {
+      return {
+        email: '',
+        password: ''
+      }
+    }, methods: {
+      login () {
+        this.$emit('login-event', this.email, this.password)
+      }
+    }
+  }
+
   const rootVue = new Vue({
       el: '#app',
       name: 'AHE Tracker',
@@ -145,27 +167,7 @@
       },
       components: {
         'food-list': foodListComponent,
-        'login': {
-          template: `
-            <form v-on:submit.prevent="login">
-              <h4>Please login</h4>
-              <input type="text" placeholder="Enter email" v-model="email">
-              <input type="password" placeholder="Enter password" v-model="password">
-              <button class="btn btn-primary login-btn">LOGIN</button>
-            </form>
-          `,
-          data: function () {
-            return {
-              email: '',
-              password: ''
-            }
-          },
-          methods: {
-            login () {
-              this.$emit('login-event', this.email, this.password)
-            }
-          }
-        }
+        'login': loginComponent
       },
       methods: {
         changeCounter: function (foodId, changeAmount) {
